@@ -30,6 +30,10 @@ function isValidTweet(tweet) {
   );
 }
 
+function isValidPageNumber(pageNumber) {
+  return pageNumber && pageNumber > 0;
+}
+
 const app = express();
 app.use(cors());
 app.use(json());
@@ -39,7 +43,7 @@ app.post("/sign-up", (req, res) => {
 
   if (isValidUser(user)) {
     users.push(user);
-    res.sendStatus(200);
+    res.sendStatus(201);
   } else {
     res.status(400).send("Todos os campos são obrigatórios!");
   }
@@ -67,14 +71,25 @@ app.post("/tweets", (req, res) => {
 });
 
 app.get("/tweets", (req, res) => {
-  const numTweets = tweets.length;
-  const firstIndex = numTweets > 10 ? numTweets - 10 : 0;
-  res.send(tweets.slice(firstIndex));
+  const page = parseInt(req.query.page);
+  const pageSize = 10;
+
+  if (isValidPageNumber(page)) {
+    const numTweets = tweets.length;
+    const beginIndex = numTweets - pageSize * page;
+    const endIndex = beginIndex + pageSize;
+    const pageBegin = beginIndex > 0 ? beginIndex : 0;
+    const pageEnd = endIndex > 0 ? endIndex : 0;
+
+    res.status(200).send(tweets.slice(pageBegin, pageEnd).reverse());
+  } else {
+    res.status(400).send("Informe uma página válida!");
+  }
 });
 
 app.get("/tweets/:username", (req, res) => {
   const { username } = req.params;
-  res.send(tweets.filter((tweet) => tweet.username === username));
+  res.status(200).send(tweets.filter((tweet) => tweet.username === username));
 });
 
 app.listen(5000, () => {
