@@ -19,12 +19,14 @@ function isValidUser(user) {
 }
 
 function isValidTweet(tweet) {
-  const { username, tweet: text } = tweet;
+  const { username, tweet: text, avatar } = tweet;
   return (
     typeof username === "string" &&
     username.length !== 0 &&
     typeof text === "string" &&
-    text.length !== 0
+    text.length !== 0 &&
+    typeof avatar === "string" &&
+    avatar.length !== 0
   );
 }
 
@@ -34,24 +36,33 @@ app.use(json());
 
 app.post("/sign-up", (req, res) => {
   const user = req.body;
-  users.push(user);
 
-  res.send("OK");
+  if (isValidUser(user)) {
+    users.push(user);
+    res.sendStatus(200);
+  } else {
+    res.status(400).send("Todos os campos são obrigatórios!");
+  }
 });
 
 app.post("/tweets", (req, res) => {
   const tweet = req.body;
-  const { username } = tweet;
+  const { user: username } = req.headers;
+  tweet.username = username;
 
   if (isUserSignedUp(username)) {
     const user = users.find((user) => user.username === username);
     const { avatar } = user;
     tweet.avatar = avatar;
-    tweets.push(tweet);
 
-    res.send("OK");
+    if (isValidTweet(tweet)) {
+      tweets.push(tweet);
+      res.sendStatus(201);
+    } else {
+      res.status(400).send("Todos os campos são obrigatórios!");
+    }
   } else {
-    res.send("Você não está cadastrado!");
+    res.status(401).send("Você não está cadastrado!");
   }
 });
 
