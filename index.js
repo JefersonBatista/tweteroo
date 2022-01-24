@@ -41,8 +41,12 @@ app.post("/sign-up", (req, res) => {
 
 app.post("/tweets", (req, res) => {
   const tweet = req.body;
+  const { username } = tweet;
 
-  if (isUserSignedUp(tweet.username)) {
+  if (isUserSignedUp(username)) {
+    const user = users.find((user) => user.username === username);
+    const { avatar } = user;
+    tweet.avatar = avatar;
     tweets.push(tweet);
 
     res.send("OK");
@@ -52,18 +56,14 @@ app.post("/tweets", (req, res) => {
 });
 
 app.get("/tweets", (req, res) => {
-  res.send(tweets.slice(0, 10));
+  const numTweets = tweets.length;
+  const firstIndex = numTweets > 10 ? numTweets - 10 : 0;
+  res.send(tweets.slice(firstIndex));
 });
 
 app.get("/tweets/:username", (req, res) => {
   const { username } = req.params;
-  res.send(
-    tweets.filter((tweet) => tweet.username === username)
-    /* .map((tweet) => {
-        const avatar = users.find((user) => user.username === username).avatar;
-        return tweet.avatar;
-      }) */
-  );
+  res.send(tweets.filter((tweet) => tweet.username === username));
 });
 
 app.listen(5000, () => {
