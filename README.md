@@ -14,5 +14,7 @@ This API includes the following routes:
 
 1. Clone this repository
 2. Clone the [front-end of this project](https://github.com/JefersonBatista/tweteroo-interface)
-3. In a terminal, in the directory of this repository, run `npm start`, to run this back-end.
-2. While this back-end is running, run the [front-end of this project](https://github.com/JefersonBatista/tweteroo-interface) opening its `index.html` file in a browser.
+3. In a terminal, in the directory of this repository:
+- if not installed yet, run `npm install` to install this back-end
+- run `npm start` to run this back-end 
+4. While this back-end is running, run the [front-end of this project](https://github.com/JefersonBatista/tweteroo-interface) opening its `index.html` file in a browser.
